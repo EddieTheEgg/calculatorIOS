@@ -2,7 +2,8 @@ var numOne = 0;
 var numTwo = 0;
 var operatorActive = "";
 var lastOperator = ""; // Store the last valid operator
-var lastCharGlobal = "";
+var prevText = "";
+var lastChar = "";
 
 const buttons = document.querySelectorAll(".buttons");
 const previousDisplay = document.getElementById("previousDisplay");
@@ -95,7 +96,7 @@ function switchOperations(e) {
                 lastOperatorButton.style.color = "white"; // Reset the color
                 lastOperatorButton.style.backgroundColor = "orange"; // Reset the background color
             }
-            if(lastOperator !== "" && lastOperator && displayNum !== "0" && displayNum !== ""){
+            if(lastOperator !== "" && displayNum !== "0" && displayNum !== ""){
                 numTwo = parseFloat(displayNum);
                 displayNum = operate(lastOperator, numOne, numTwo).toString();
                 display.textContent = parseFloat(displayNum);
@@ -111,18 +112,21 @@ function switchOperations(e) {
 
 function handleOperatorClick(e, op) {
     let prevText = previousDisplay.textContent;
-    
-    console.log(prevText);
-    console.log(lastCharGlobal);
-    
-    if (lastOperator !== "" && lastOperator !== "=" ){
-        // If there was a previous operator and it's not "= or any operator", perform the calculation
+    let lastChar = prevText.slice(-2); //-2 to actually reach the last char, a space char appeared as last element.
+
+    console.log(lastChar);
+
+    if (lastOperator !== "" && displayNum !== "0" && displayNum !== "") {
+        // If there was a previous operator and it's not "=", perform the calculation
         numTwo = parseFloat(displayNum);
         displayNum = operate(lastOperator, numOne, numTwo).toString();
         display.textContent = parseFloat(displayNum);
         previousDisplay.textContent += " = " + displayNum + " " + e.target.textContent;
+    } else if (isNaN(lastChar)) {
+        // If the last character is an operator, replace it with the new operator
+        previousDisplay.textContent = prevText.slice(0, -2) + e.target.textContent;
     } else {
-        // Otherwise, it's a new calculation, update the previousDisplay with the current number
+        // Otherwise, it's a new calculation, update the previousDisplay with the current number and operator
         previousDisplay.textContent += " " + e.target.textContent;
     }
 
@@ -137,7 +141,7 @@ function handleOperatorClick(e, op) {
     operatorActive = op;
     lastOperator = op; // Update lastOperator with the current operator
     
-
+    
    
 }
 
